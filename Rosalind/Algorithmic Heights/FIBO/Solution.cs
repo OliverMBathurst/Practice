@@ -6,7 +6,7 @@ static long FibNumAtIndex(int index)
     if (index == 1 || index == 2)
         return 1;
 
-    int beforeNMinusOne = 1, beforeNMinusTwo = 1, current = 0;
+    long beforeNMinusOne = 1, beforeNMinusTwo = 1, current = 0;
 
     for (var idx = 3; idx < index + 1; idx++)
     {
