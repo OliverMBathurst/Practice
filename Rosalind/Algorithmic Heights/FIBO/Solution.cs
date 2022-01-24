@@ -19,4 +19,3 @@ static long FibNumAtIndex(int index)
 }
 
 Console.WriteLine(FibNumAtIndex(20));
-//6765

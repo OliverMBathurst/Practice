@@ -5,11 +5,3 @@ var numbers = File.ReadAllLines(@"C:\Users\Oliver\Desktop\rosalind_maj.txt")
 
 foreach (var num in numbers)
     Console.Write($"{num} ");
-
-public static class Extensions {
-    public static T FirstOrElse<T>(this IEnumerable<T> collection, Func<T, bool> predicate, T @default)
-    {
-        var matchingElements = collection.Where(predicate);
-        return matchingElements.Any() ? matchingElements.First() : @default;
-    }
-}

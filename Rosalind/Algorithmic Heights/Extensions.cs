@@ -1,5 +1,11 @@
 public static class Extensions
 {
+	public static T FirstOrElse<T>(this IEnumerable<T> collection, Func<T, bool> predicate, T @default)
+    {
+        var matchingElements = collection.Where(predicate);
+        return matchingElements.Any() ? matchingElements.First() : @default;
+    }
+	
     public static void ForEach<T>(this IEnumerable<T> sequence, Action<T> action)
     {
         foreach (var obj in sequence)

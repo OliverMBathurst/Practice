@@ -5,6 +5,7 @@ static int GetInsertionSortSwapsCount(int[] arr)
 
     while (!sorted)
     {
+		sorted = true;
         for (var i = 0; i + 1 < arr.Length; i++)
         {
             if (arr[i] > arr[i + 1])
@@ -13,16 +14,8 @@ static int GetInsertionSortSwapsCount(int[] arr)
                 arr[i + 1] = arr[i];
                 arr[i] = tmp;
                 swaps++;
-            }
-        }
-
-        sorted = true;
-        for (var j = 0; j + 1 < arr.Length; j++)
-        {
-            if (arr[j] > arr[j + 1])
-            {
-                sorted = false;
-                break;
+				
+				sorted = false;
             }
         }
     }
