@@ -42,6 +42,37 @@ public static class Extensions
         return list;
     }
 
+    public static IDictionary<K, List<K>> ToUndirectedVUDictionary<K>(
+        this IEnumerable<KeyValuePair<K, K>> keyValuePairs) where K : notnull
+    {
+        var dict = new Dictionary<K, List<K>>();
+        foreach (var kvp in keyValuePairs)
+        {
+            if (!dict.ContainsKey(kvp.Key))
+                dict.Add(kvp.Key, new List<K> { kvp.Value });
+            else
+                dict[kvp.Key].Add(kvp.Value);
+
+            if (!dict.ContainsKey(kvp.Value))
+                dict.Add(kvp.Value, new List<K> { kvp.Key });
+            else
+                dict[kvp.Value].Add(kvp.Key);
+        }
+
+        return dict;
+    }
+
+    public static void AddOrUpdate<K, V>(
+        this IDictionary<K, V> dictionary, 
+        KeyValuePair<K, V> addValue,
+        Action<V> updateAction)
+    {
+        if (!dictionary.ContainsKey(addValue.Key))
+            dictionary.Add(addValue);
+        else
+            updateAction(dictionary[addValue.Key]);
+    }
+
     public static IDictionary<K, V> ToDictionary<K, V, T>(
         this IEnumerable<T> sequence,
         Func<T, K> keySelector,
