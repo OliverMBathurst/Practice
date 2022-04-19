@@ -1,4 +1,4 @@
-static string PrintThreeSumIndexes(IEnumerable<int> collection)
+static string PrintThreeSumIndices(IEnumerable<int> collection)
 {
     var printValue = "-1";
     var dict = collection.ToDictionary(
@@ -28,4 +28,4 @@ var numbers = File.ReadAllLines(@"C:\Users\Oliver\Desktop\rosalind_3sum.txt")
     .ToArray();
 
 foreach (var array in numbers)
-    Console.WriteLine(PrintThreeSumIndexes(array));
+    Console.WriteLine(PrintThreeSumIndices(array));
