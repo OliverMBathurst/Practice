@@ -1,5 +1,10 @@
 public static class Extensions
 {
+    public static bool ContainsKeys<K, V>(this IDictionary<K, V> dictionary, params K[] keys)
+    {
+        return keys.All(k => dictionary.ContainsKey(k));
+    }
+
     public static T FirstOrElse<T>(this IEnumerable<T> collection, Func<T, bool> predicate, T @default)
     {
         var matchingElements = collection.Where(predicate);
