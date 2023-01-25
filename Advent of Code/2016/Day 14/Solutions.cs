@@ -1,77 +1,81 @@
 using System.Security.Cryptography;
 using System.Text;
 
+const string input = "qzyelonm";
+
 //Part 1
-Console.WriteLine(GetIndices("qzyelonm", 64).Last());
+Console.WriteLine(GetIndex(input, 64, false));
 //15168
 
-static IEnumerable<int> GetIndices(string input, int keyCount)
+//Part 2
+Console.WriteLine(GetIndex(input, 64, true));
+//20864
+
+static int GetIndex(string input, int keyCount, bool partTwo)
 {
-    var indices = new List<int>();
-    var triplets = new List<Triplet>();
-    var idx = 0;
-    using (var md5 = MD5.Create())
+    var tripletDict = new Dictionary<char, List<Triplet>>();
+    int idx = 0, indicesCount = 0;
+    using var md5 = MD5.Create();
+    while (true)
     {
-        while (indices.Count < keyCount)
+        var hash = Convert.ToHexString(md5.ComputeHash(Encoding.Default.GetBytes($"{input}{idx}"))).ToLower();
+        if (partTwo)
+            for (var i = 0; i < 2016; i++)
+                hash = Convert.ToHexString(md5.ComputeHash(Encoding.Default.GetBytes(hash))).ToLower();
+
+        var hasFoundTriplet = false;
+        for (var i = 0; i + 2 < hash.Length; i++)
         {
-            var hash = Convert.ToHexString(md5.ComputeHash(Encoding.Default.GetBytes($"{input}{idx}"))).ToLower();
-
-            var hasFoundTriplet = false;
-            for (var i = 0; i + 2 < hash.Length; i++)
+            if (hash[i] == hash[i + 1] && hash[i] == hash[i + 2])
             {
-                if (hash[i] == hash[i + 1] && hash[i] == hash[i + 2])
+                var additional = 0;
+                for (var j = i + 3; j < hash.Length && hash[j] == hash[i]; j++)
+                    additional++;
+
+                if (additional == 2 && tripletDict.ContainsKey(hash[i]))
                 {
-                    var additional = 0;
-                    for (var j = i + 3; j < hash.Length && hash[j] == hash[i]; j++)
-                        additional++;
-
-                    if (additional == 2)
+                    foreach (var matchingTriplet in tripletDict[hash[i]])
                     {
-                        var matchingTriplets = triplets.Where(x => x.Character.Equals(hash[i])).ToList();
-                        foreach (var matchingTriplet in matchingTriplets.OrderBy(x => x.Index))
-                        {
-                            indices.Add(matchingTriplet.Index);
-                            triplets.Remove(matchingTriplet);
-                        }
+                        indicesCount++;
+                        if (indicesCount == (partTwo ? keyCount + 1 : keyCount))
+                            return matchingTriplet.Index;
                     }
 
-                    if (!hasFoundTriplet)
-                    {
-                        triplets.Add(new Triplet(hash[i], idx, 1000));
-                        hasFoundTriplet = true;
-                    }
+                    tripletDict[hash[i]].Clear();
+                }
+
+                if (!hasFoundTriplet)
+                {
+                    if (tripletDict.ContainsKey(hash[i]))
+                        tripletDict[hash[i]].Add(new Triplet(idx));
+                    else
+                        tripletDict.Add(hash[i], new List<Triplet> { new Triplet(idx) });
+                    hasFoundTriplet = true;
                 }
             }
-
-            foreach (var triplet in triplets)
-                triplet.DecrementCounter();
-
-            triplets = triplets.Where(x => x.Counter > 0).ToList();
-
-            idx++;
         }
-    }
 
-    return indices.OrderBy(x => x).Take(keyCount);
+        foreach (var key in tripletDict.Select(kvp => kvp.Key))
+            tripletDict[key] = tripletDict[key].Where(x => x.DecrementCounter()).ToList();
+
+        idx++;
+    }
 }
 
 class Triplet
 {
-    public Triplet(char character, int index, int counter)
+    public Triplet(int index)
     {
-        Character = character;
         Index = index;
-        Counter = counter;
+        Counter = 1000;
     }
 
-    public int Index { get; }
+    public int Index { get; init; }
 
     public int Counter { get; private set; }
 
-    public char Character { get; }
-
-    public void DecrementCounter()
+    public bool DecrementCounter()
     {
-        Counter--;
+        return Counter-- > 0;
     }
 }
