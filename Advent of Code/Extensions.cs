@@ -118,4 +118,14 @@ public static class Extensions
 
         return aggregationTransformer(firstAggregationFunction(sequence), secondAggregationFunction(sequence));
     }
+
+    public static T MinByOrElse<T, TReturn>(this IEnumerable<T> sequence, Func<T, TReturn> comparer, T defaultValue)
+    {
+        if (!sequence.Any())
+        {
+            return defaultValue;
+        }
+
+        return sequence.MinBy(comparer);
+    }
 }
